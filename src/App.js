@@ -1,29 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChatWidget from "./components/ChatWidget";
+import useFaqSearch from "./hooks/useFaqSearch";
+import students from "./assets/students-illustration.png";
 import "./App.css";
-import students from "./assets/students-illustration.png"; // ảnh minh họa
 
 export default function App() {
   const [showChat, setShowChat] = useState(false);
-  const [messages, setMessages] = useState([]); // ✅ lưu tin nhắn
+  const [messages, setMessages] = useState([]);
+  const [relatedFAQs, setRelatedFAQs] = useState([]);
 
-  // ✅ Hàm xử lý khi người dùng gửi tin
+  const { searchFaq, getInitialFaqs } = useFaqSearch();
+
+  useEffect(() => {
+    if (showChat) {
+      setRelatedFAQs(getInitialFaqs());
+    }
+  }, [showChat]);
+
   const handleSend = (text) => {
-    const newMessage = { text, fromUser: true };
-    setMessages((prev) => [...prev, newMessage]);
+    const userMsg = { text, fromUser: true };
+    setMessages((prev) => [...prev, userMsg]);
 
-    // Giả lập phản hồi từ hệ thống
-    setTimeout(() => {
+    const result = searchFaq(text);
+
+    if (result.answer) {
       setMessages((prev) => [
         ...prev,
-        { text: "Thanks for your question! 😊", fromUser: false },
+        { text: result.answer, fromUser: false },
       ]);
-    }, 800);
+      setRelatedFAQs(result.related);
+    } else {
+      setMessages((prev) => [
+        ...prev,
+        { text: "Sorry, I don't have any information on this issue.", fromUser: false },
+      ]);
+      setRelatedFAQs(result.related);
+    }
+  };
+
+  const handleSelectFAQ = (question) => {
+    handleSend(question);
   };
 
   return (
     <div className="landing-page">
-      {/* ===== HEADER ===== */}
       <header className="header">
         <h1 className="logo">UniFAQ</h1>
         <nav>
@@ -34,14 +54,10 @@ export default function App() {
         <button className="get-started">Get Started</button>
       </header>
 
-      {/* ===== HERO SECTION ===== */}
       <main className="hero">
         <div className="hero-text">
           <h1>Get Instant Answers to Your University Questions</h1>
-          <p>
-            UniFAQ helps students find answers in seconds with a clean and
-            responsive platform.
-          </p>
+          <p>UniFAQ helps students find answers in seconds with a clean and responsive platform.</p>
           <button onClick={() => setShowChat(true)}>Try UniFAQ Now</button>
         </div>
         <div className="hero-img">
@@ -49,12 +65,13 @@ export default function App() {
         </div>
       </main>
 
-      {/* ===== CHAT WIDGET ===== */}
       {showChat && (
         <ChatWidget
           onClose={() => setShowChat(false)}
-          onSend={handleSend} // ✅ thêm dòng này
-          messages={messages} // ✅ truyền danh sách tin nhắn
+          onSend={handleSend}
+          messages={messages}
+          relatedFAQs={relatedFAQs}
+          onSelectFAQ={handleSelectFAQ}
         />
       )}
     </div>

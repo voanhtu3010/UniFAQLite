@@ -1,24 +1,14 @@
-import React from "react";
-import "./MessageList.css";
+export default function MessageList({ messages }) {
+  if (!messages.length)
+    return <p className="empty-text">No messages yet. Start chatting!</p>;
 
-export default function MessageList({ messages = [] }) {
   return (
     <div className="message-list">
-      {messages.length === 0 ? (
-        <p className="no-messages">No messages yet. Start chatting!</p>
-      ) : (
-        messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message-item ${
-              index % 2 === 0 ? "user" : "bot"
-            }`}
-          >
-            {msg}
-          </div>
-        ))
-      )}
+      {messages.map((msg, i) => (
+        <div key={i} className={msg.fromUser ? "message user" : "message bot"}>
+          {msg.text}
+        </div>
+      ))}
     </div>
   );
 }
-

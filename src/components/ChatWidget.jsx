@@ -1,42 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ChatWidget.css";
 
-export default function ChatWidget({ onClose, messages = [], onSend }) {
-  const [input, setInput] = React.useState("");
+export default function ChatWidget({ onClose, onSend, messages, relatedFAQs, onSelectFAQ }) {
+  const [input, setInput] = useState("");
 
   const handleSend = () => {
-    if (input.trim()) {
+    if (input.trim() !== "") {
       onSend(input);
       setInput("");
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSend();
+  };
+
   return (
     <div className="chat-widget">
       <div className="chat-header">
-        <h3>UniFAQ Chat</h3>
-        <button onClick={onClose}>×</button>
+        <span>UniFAQ Chat</span>
+        <button className="close-btn" onClick={onClose}>✕</button>
       </div>
 
-      <div className={`message-list ${messages.length === 0 ? "empty" : ""}`}>
-        {messages.length === 0 ? (
-          <p>No messages yet. Start chatting!</p>
-        ) : (
-          messages.map((msg, i) => (
-            <div key={i} className={`message ${msg.fromUser ? "user" : "bot"}`}>
-              {msg.text}
-            </div>
-          ))
+      <div className="chat-body">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`chat-message ${msg.fromUser ? "user" : "bot"}`}>
+            {msg.text}
+          </div>
+        ))}
+
+        {/* --- Luôn hiển thị 3 câu hỏi gợi ý --- */}
+        {relatedFAQs?.length > 0 && (
+          <div className="related-faqs">
+            <p><strong>Top 3 Related FAQs:</strong></p>
+            {relatedFAQs.map((faq, idx) => (
+              <button
+                key={idx}
+                className="related-faq-btn"
+                onClick={() => onSelectFAQ(faq.question)}
+              >
+                {faq.question}
+              </button>
+            ))}
+          </div>
         )}
       </div>
 
-      <div className="input-bar">
+      <div className="chat-input">
         <input
           type="text"
-          placeholder="Type your message..."
+          placeholder="Type your question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          onKeyDown={handleKeyDown}
         />
         <button onClick={handleSend}>Send</button>
       </div>
