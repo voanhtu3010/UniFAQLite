@@ -1,0 +1,10 @@
+.chat-header {
+  background: linear-gradient(90deg, #007bff, #0099ff);
+  color: white;
+  text-align: center;
+  padding: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
