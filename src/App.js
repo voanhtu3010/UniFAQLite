@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ChatWidget from "./components/ChatWidget";
+import ChatWidget from "./components/ChatWidget/ChatWidget";
 import useFaqSearch from "./hooks/useFaqSearch";
 import students from "./assets/students-illustration.png";
 import "./App.css";
