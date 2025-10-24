@@ -15,6 +15,7 @@ export default function App() {
     if (showChat) {
       setRelatedFAQs(getInitialFaqs());
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showChat]);
 
   const handleSend = (text) => {
